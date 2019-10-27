@@ -83,7 +83,7 @@ public class ANN
         Sigmoid sigm = (x) => 
         {
             double k = (double)System.Math.Exp(x);
-            return k / (1.0f * k);
+            return k / (1.0f + k);
         };
         return sigm(value);
     }
