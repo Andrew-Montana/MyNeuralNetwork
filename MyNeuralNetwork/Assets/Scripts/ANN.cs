@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ANN
 {
+    delegate double Sigmoid(double value);
+
     public int numInputs; // neurons
     public int numOutputs; // neurons
     public int numHiddenL; // layers
@@ -42,7 +44,7 @@ public class ANN
 
     }
 
-    public List<double> Go (List<double> inputValues, List<double> desiredOutput)
+    public List<double> Go (List<double> inputValues, List<double> desiredOutputs)
     { 
         List<double> inputs = new List<double>();
         List<double> outputs = new List<double>();
@@ -72,12 +74,64 @@ public class ANN
             }
 
         }
-
+        UpdateWeights(outputs, desiredOutputs);
         return outputs;
     }
 
     public double ActivationFunction(double value)
     {
-        return 0;
+        Sigmoid sigm = (x) => 
+        {
+            double k = (double)System.Math.Exp(x);
+            return k / (1.0f * k);
+        };
+        return sigm(value);
+    }
+
+    public void UpdateWeights(List<double> outputs, List<double> desiredOutputs)
+    {
+        double error;
+        // Layers
+        for (int l = layers.Count-1; l >= 0; l--)
+        {
+            // Neurons
+            for (int n = 0; n < layers[l].numNeurons; n++)
+            {
+                // errors
+                if (l == (layers.Count - 1))
+                {
+                    if(l == (layers.Count-1))
+                    {
+                        error = desiredOutputs[n] - outputs[n]; // delta rule
+                        layers[l].neurons[n].errorGradient = outputs[n] * (1 - outputs[n]) * error;
+                    }
+                    else
+                    {
+                        layers[l].neurons[n].errorGradient = layers[l].neurons[n].output * (1 - layers[l].neurons[n].output);
+                        double errorGradSum = 0;
+                        for (int p = 0; p < layers[l+1].numNeurons; p++)
+                        {
+                            errorGradSum += layers[p + 1].neurons[p].errorGradient * layers[l + 1].neurons[p].weights[n];
+                        }
+                        layers[l].neurons[n].errorGradient *= errorGradSum;
+                    }
+                }
+
+                // Neuron Inputs. Actual weights update
+                for (int i = 0; i < layers[l].neurons[n].numInputs; i++)
+                {
+                    if (l == (layers.Count - 1))
+                    {
+                        error = desiredOutputs[n] - outputs[n];
+                        layers[l].neurons[n].weights[i] += learningRate * layers[l].neurons[n].inputs[i] * error;
+                    }
+                    else
+                    {
+                        layers[l].neurons[n].weights[i] += learningRate * layers[i].neurons[n].inputs[i] * layers[l].neurons[n].errorGradient;
+                    }
+                    layers[l].neurons[n].bias += learningRate * -1 * layers[l].neurons[n].errorGradient;
+                }
+            }
+        }
     }
 }
