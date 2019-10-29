@@ -5,41 +5,51 @@ using UnityEngine;
 public class Brain : MonoBehaviour
 {
     ANN ann;
-    double sumSquareError;
+    double sumSquareError = 0;
 
-    // Start is called before the first frame update
     void Start()
     {
-        ann = new ANN(2, 1, 0, 2, 0.8f);
+        ann = new ANN(2, 1, 2, 2, 0.8);
 
         List<double> result;
 
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < 10; i++)
         {
+            Debug.Log("Epoch " + 1);
             sumSquareError = 0;
-            result = Train(new double[] { 0, 0 }, new double[] { 0 });
-            sumSquareError += Mathf.Pow((float) result[0] - 0, 2);
-            result = Train(new double[] { 0, 1 }, new double[] { 1 });
-            sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
-            result = Train(new double[] { 1, 0 }, new double[] { 1 });
-            sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
-            result = Train(new double[] { 1, 1 }, new double[] { 0 });
+            result = Train(1, 1, 0);
             sumSquareError += Mathf.Pow((float)result[0] - 0, 2);
+            result = Train(1, 0, 1);
+            sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
+            result = Train(0, 1, 1);
+            sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
+            result = Train(0, 0, 0);
+            sumSquareError += Mathf.Pow((float)result[0] - 0, 2);
+            Debug.Log("####");
         }
+        Debug.Log("SSE: " + sumSquareError);
 
-        Debug.Log("SSE = " + sumSquareError);
-
-        result = Train(new double[] { 0, 0 }, new double[] { 0 });
-        Debug.Log(string.Format("0 0 {0}", result[0]));
-        result = Train(new double[] { 0, 1 }, new double[] { 1 });
-        Debug.Log(string.Format("0 1 {0}", result[0]));
-        result = Train(new double[] { 1, 0 }, new double[] { 1 });
-        Debug.Log(string.Format("1 0 {0}", result[0]));
-        result = Train(new double[] { 1, 1 }, new double[] { 0 });
-        Debug.Log(string.Format("1 1 {0}", result[0]));
+        result = Train(1, 1, 0);
+        Debug.Log(" 1 1 " + result[0]);
+        result = Train(1, 0, 1);
+        Debug.Log(" 1 0 " + result[0]);
+        result = Train(0, 1, 1);
+        Debug.Log(" 0 1 " + result[0]);
+        result = Train(0, 0, 0);
+        Debug.Log(" 0 0 " + result[0]);
     }
 
+    List<double> Train(double i1, double i2, double o)
+    {
+        List<double> inputs = new List<double>();
+        List<double> outputs = new List<double>();
+        inputs.Add(i1);
+        inputs.Add(i2);
+        outputs.Add(o);
+        return (ann.Go(inputs, outputs));
+    }
 
+    /*
     public List<double> Train(double[] inputValues, double[] outputs)
     {
         List<double> inputs = new List<double>();
@@ -53,5 +63,5 @@ public class Brain : MonoBehaviour
             desiredOutputs.Add(o);
         }
         return ann.Go(inputs, desiredOutputs);
-    }
+    } */
 }

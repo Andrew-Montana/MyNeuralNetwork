@@ -14,7 +14,7 @@ public class Neuron
     public Neuron(int numInputs)
     {
         this.numInputs = numInputs;
-        bias = UnityEngine.Random.Range(-1f, 1f);
+        bias = 1f;
         for (int i = 0; i < numInputs; i++)
         {
             weights.Add(UnityEngine.Random.Range(-1f, 1f));
@@ -26,5 +26,9 @@ public class Neuron
         this.numInputs = numInputs;
         this.weights = weights;
         this.bias = bias;
+    }
+
+    public Neuron()
+    {
     }
 }

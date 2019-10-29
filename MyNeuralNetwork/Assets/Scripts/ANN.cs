@@ -22,10 +22,10 @@ public class ANN
         numNPerHidden = numNPH;
         learningRate = lr;
 
-        if(numHL > 0)
+        if (numHL > 0)
         {
             // Input Layer
-            layers.Add(new Layer(numInputs, numInputs));
+           // layers.Add(new Layer(numInputs));
             // Hidden Layers
             for (int i = 0; i < numHL; i++)
             {
@@ -39,17 +39,17 @@ public class ANN
         }
         else
         {
-            layers.Add(new Layer(numOutputs, numInputs));
+            Debug.Log("You need at least 1 hidden layer");
         }
 
     }
 
-    public List<double> Go (List<double> inputValues, List<double> desiredOutputs)
-    { 
-        List<double> inputs = new List<double>();
+    public List<double> Go(List<double> inputValues, List<double> desiredOutputs)
+    {
+        List<double> inputs = new List<double>(inputValues);
         List<double> outputs = new List<double>();
 
-        inputs = inputValues;
+       // inputs = inputValues;
 
         // Layer
         for (int l = 0; l < layers.Count; l++)
@@ -62,14 +62,15 @@ public class ANN
             for (int n = 0; n < layers[l].numNeurons; n++)
             {
                 // Neuron Inputs
-                double result = 0;
-                layers[l].neurons[n].inputs = new List<double>(inputs);
+                double sum = 0;
+                layers[l].neurons[n].inputs.Clear();
                 for (int i = 0; i < layers[l].neurons[n].numInputs; i++)
                 {
-                    result += layers[l].neurons[n].weights[i] * layers[l].neurons[n].inputs[i];
+                    layers[l].neurons[n].inputs.Add(inputs[i]);
+                    sum += layers[l].neurons[n].weights[i] * layers[l].neurons[n].inputs[i];
                 }
-                result -= layers[l].neurons[n].bias;
-                layers[l].neurons[n].output = ActivationFunction(result);
+                sum += layers[l].neurons[n].bias;
+                layers[l].neurons[n].output = ActivationFunction(sum);
                 outputs.Add(layers[l].neurons[n].output);
             }
 
@@ -80,7 +81,7 @@ public class ANN
 
     public double ActivationFunction(double value)
     {
-        Sigmoid sigm = (x) => 
+        Sigmoid sigm = (x) =>
         {
             double k = (double)System.Math.Exp(x);
             return k / (1.0f + k);
@@ -92,7 +93,7 @@ public class ANN
     {
         double error;
         // Layers
-        for (int l = layers.Count-1; l >= 0; l--)
+        for (int l = layers.Count - 1; l >= 0; l--)
         {
             // Neurons
             for (int n = 0; n < layers[l].numNeurons; n++)
@@ -100,7 +101,7 @@ public class ANN
                 // errors
                 if (l == (layers.Count - 1))
                 {
-                    if(l == (layers.Count-1))
+                    if (l == (layers.Count - 1))
                     {
                         error = desiredOutputs[n] - outputs[n]; // delta rule
                         layers[l].neurons[n].errorGradient = outputs[n] * (1 - outputs[n]) * error;
@@ -109,7 +110,7 @@ public class ANN
                     {
                         layers[l].neurons[n].errorGradient = layers[l].neurons[n].output * (1 - layers[l].neurons[n].output);
                         double errorGradSum = 0;
-                        for (int p = 0; p < layers[l+1].numNeurons; p++)
+                        for (int p = 0; p < layers[l + 1].numNeurons; p++)
                         {
                             errorGradSum += layers[p + 1].neurons[p].errorGradient * layers[l + 1].neurons[p].weights[n];
                         }

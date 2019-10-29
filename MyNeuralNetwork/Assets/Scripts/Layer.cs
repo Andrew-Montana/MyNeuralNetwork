@@ -15,4 +15,13 @@ public class Layer
             neurons.Add(new Neuron(numNeuronInputs));
         }
     }
+
+    public Layer(int numNeurons)
+    {
+        this.numNeurons = numNeurons;
+        for (int i = 0; i < numNeurons; i++)
+        {
+            neurons.Add(new Neuron());
+        }
+    }
 }
