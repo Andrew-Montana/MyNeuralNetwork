@@ -73,7 +73,7 @@ public class ANN
                     layers[l].neurons[n].inputs.Add(inputs[i]);
                     sum += layers[l].neurons[n].weights[i] * layers[l].neurons[n].inputs[i];
                 }
-               // sum -= layers[l].neurons[n].bias;
+                sum -= layers[l].neurons[n].bias;
                 layers[l].neurons[n].output = ActivationFunction(sum);
                 outputs.Add(layers[l].neurons[n].output);
             }
@@ -85,12 +85,12 @@ public class ANN
 
     public double ActivationFunction(double value)
     {
-        Sigmoid sigm = (x) =>
-        {
-            double k = (double)System.Math.Exp(x);
-            return k / (1.0f + k);
-        };
-        return sigm(value);
+         Sigmoid sigm = (x) =>
+         {
+             double k = (double)System.Math.Exp(x);
+             return k / (1.0f + k);
+         };
+         return sigm(value);
     }
 
     public void UpdateWeights(List<double> outputs, List<double> desiredOutputs)
@@ -129,9 +129,9 @@ public class ANN
                     }
                     else
                     {
-                        layers[l].neurons[n].weights[i] += learningRate * layers[i].neurons[n].inputs[i] * layers[l].neurons[n].errorGradient;
+                        layers[l].neurons[n].weights[i] += learningRate * layers[l].neurons[n].inputs[i] * layers[l].neurons[n].errorGradient;
                     }
-                  //  layers[l].neurons[n].bias += learningRate * -1 * layers[l].neurons[n].errorGradient;
+                    layers[l].neurons[n].bias += learningRate * -1 * layers[l].neurons[n].errorGradient;
                 }
             }
         }

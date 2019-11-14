@@ -10,7 +10,7 @@ public class Brain : MonoBehaviour
 
     void Start()
     {
-        ann = new ANN(2, 1, 2, 2, 0.8);
+        ann = new ANN(2, 1, 2, 3, 0.8);
     }
 
     public void btnTrain()
@@ -19,25 +19,25 @@ public class Brain : MonoBehaviour
         for (int i = 0; i < 1000; i++)
         {
             sumSquareError = 0;
-            result = Train(0, 0, 0);
+            result = Train(1, 1, 0);
             sumSquareError += Mathf.Pow((float)result[0] - 0, 2);
-            result = Train(0, 1, 1);
-            sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
             result = Train(1, 0, 1);
             sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
-            result = Train(1, 1, 1);
+            result = Train(0, 1, 1);
             sumSquareError += Mathf.Pow((float)result[0] - 1, 2);
+            result = Train(0, 0, 0);
+            sumSquareError += Mathf.Pow((float)result[0] - 0, 2);
         }
         Debug.Log("SSE: " + sumSquareError);
 
-        result = Train(0, 0, 0);
-        Debug.Log(" 0 0 " + result[0]);
-        result = Train(0, 1, 1);
-        Debug.Log(" 0 1 " + result[0]);
+        result = Train(1, 1, 0);
+        Debug.Log(" 1 1 " + result[0]);
         result = Train(1, 0, 1);
         Debug.Log(" 1 0 " + result[0]);
-        result = Train(1, 1, 1);
-        Debug.Log(" 1 1 " + result[0]);
+        result = Train(0, 1, 1);
+        Debug.Log(" 0 1 " + result[0]);
+        result = Train(0, 0, 0);
+        Debug.Log(" 0 0 " + result[0]);
     }
 
     List<double> Train(double i1, double i2, double o)
