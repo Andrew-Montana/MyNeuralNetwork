@@ -21,14 +21,18 @@ public class Neuron
         }
     }
 
+    /*
     public Neuron(int numInputs, List<double> weights, double bias)
     {
         this.numInputs = numInputs;
         this.weights = weights;
         this.bias = bias;
     }
+    */
 
+    /*
     public Neuron()
     {
     }
+    */
 }

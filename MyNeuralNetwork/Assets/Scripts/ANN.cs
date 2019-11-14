@@ -22,10 +22,14 @@ public class ANN
         numNPerHidden = numNPH;
         learningRate = lr;
 
+        // Creating Layers
+        // No sense of creating an empty layer just for abstraction. We actually transmiiting inputs througth method ForwardGo
+        // And we start our work from hidden layers, so no need in having non usable layer here in List of Layers. Just imagine that we giving inputValues from actual input layer.
+        // I can use input layer actually, but code would be so messy
         if (numHL > 0)
         {
             // Input Layer
-           // layers.Add(new Layer(numInputs));
+            // # layers.Add(new Layer(numInputs));
             // Hidden Layers
             for (int i = 0; i < numHL; i++)
             {
@@ -44,7 +48,7 @@ public class ANN
 
     }
 
-    public List<double> Go(List<double> inputValues, List<double> desiredOutputs)
+    public List<double> ForwardGo(List<double> inputValues, List<double> desiredOutputs)
     {
         List<double> inputs = new List<double>(inputValues);
         List<double> outputs = new List<double>();
@@ -69,7 +73,7 @@ public class ANN
                     layers[l].neurons[n].inputs.Add(inputs[i]);
                     sum += layers[l].neurons[n].weights[i] * layers[l].neurons[n].inputs[i];
                 }
-                sum += layers[l].neurons[n].bias;
+               // sum -= layers[l].neurons[n].bias;
                 layers[l].neurons[n].output = ActivationFunction(sum);
                 outputs.Add(layers[l].neurons[n].output);
             }
@@ -101,21 +105,18 @@ public class ANN
                 // errors
                 if (l == (layers.Count - 1))
                 {
-                    if (l == (layers.Count - 1))
+                    error = desiredOutputs[n] - outputs[n]; // delta rule
+                    layers[l].neurons[n].errorGradient = outputs[n] * (1 - outputs[n]) * error;
+                }
+                else
+                {
+                    layers[l].neurons[n].errorGradient = layers[l].neurons[n].output * (1 - layers[l].neurons[n].output);
+                    double errorGradSum = 0;
+                    for (int p = 0; p < layers[l + 1].numNeurons; p++)
                     {
-                        error = desiredOutputs[n] - outputs[n]; // delta rule
-                        layers[l].neurons[n].errorGradient = outputs[n] * (1 - outputs[n]) * error;
+                        errorGradSum += layers[l + 1].neurons[p].errorGradient * layers[l + 1].neurons[p].weights[n];
                     }
-                    else
-                    {
-                        layers[l].neurons[n].errorGradient = layers[l].neurons[n].output * (1 - layers[l].neurons[n].output);
-                        double errorGradSum = 0;
-                        for (int p = 0; p < layers[l + 1].numNeurons; p++)
-                        {
-                            errorGradSum += layers[p + 1].neurons[p].errorGradient * layers[l + 1].neurons[p].weights[n];
-                        }
-                        layers[l].neurons[n].errorGradient *= errorGradSum;
-                    }
+                    layers[l].neurons[n].errorGradient *= errorGradSum;
                 }
 
                 // Neuron Inputs. Actual weights update
@@ -130,7 +131,7 @@ public class ANN
                     {
                         layers[l].neurons[n].weights[i] += learningRate * layers[i].neurons[n].inputs[i] * layers[l].neurons[n].errorGradient;
                     }
-                    layers[l].neurons[n].bias += learningRate * -1 * layers[l].neurons[n].errorGradient;
+                  //  layers[l].neurons[n].bias += learningRate * -1 * layers[l].neurons[n].errorGradient;
                 }
             }
         }

@@ -16,12 +16,15 @@ public class Layer
         }
     }
 
-    public Layer(int numNeurons)
+    /*
+    // For Input layer
+    public Layer(int numInputs)
     {
-        this.numNeurons = numNeurons;
+        this.numNeurons = numInputs;
         for (int i = 0; i < numNeurons; i++)
         {
             neurons.Add(new Neuron());
         }
     }
+    */
 }
